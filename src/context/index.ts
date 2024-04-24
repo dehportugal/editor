@@ -11,3 +11,16 @@ export interface IGloablStateContext {
 }
 
 export const GloablStateContext = createContext<IGloablStateContext>(null);
+
+const defaultState: IGloablStateContext = {
+  object: undefined,
+  setActiveObject: () => {},
+  isReady: false,
+  setReady: () => {},
+  editor: undefined,
+  roughSvg: undefined,
+};
+
+export const GlobalStateContext = createContext<IGloablStateContext>(defaultState);
+
+

@@ -9,7 +9,7 @@ import { CenterV } from '@/fabritor/components/Center';
 import { SETTER_WIDTH } from '@/config';
 
 const items: MenuProps['items'] = [
-  {
+  /*{
     key: 'jpg',
     label: '导出为 JPG'
   },
@@ -20,18 +20,22 @@ const items: MenuProps['items'] = [
   {
     key: 'svg',
     label: '导出为 SVG'
-  },
+  },*/
   {
     key: 'json',
-    label: '导出为 模板'
+    label: 'Baixar Modelo'
   },
   {
+    key: 'save',
+    label: 'Salvar'
+  },
+  /*{
     type: 'divider'
   },
   {
     key: 'clipboard',
     label: '复制到剪贴板'
-  }
+  }*/
 ]
 
 export default function Export () {

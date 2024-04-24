@@ -11,6 +11,7 @@ import AppPanel from './AppPanel';
 import { PANEL_WIDTH } from '@/config';
 
 import './index.scss';
+import IconPanel from './iconPanel';
 
 const { Sider } = Layout;
 
@@ -24,32 +25,37 @@ const iconStyle = { fontSize: 18, marginRight: 0 };
 
 const OBJECT_TYPES = [
   {
-    label: '图层',
+    label: 'Camadas',
     value: 'design',
     icon: <AlertOutlined style={iconStyle} />
   },
   {
-    label: '文字',
+    label: 'Icones',
+    value: 'icon',
+    icon: <AlertOutlined style={iconStyle} />
+  },
+  {
+    label: 'Texto',
     value: 'text',
     icon: <FileTextOutlined style={iconStyle} />
   },
   {
-    label: '图片',
+    label: 'Foto',
     value: 'image',
     icon: <PictureOutlined style={iconStyle} />
   },
   {
-    label: '素材',
+    label: 'Formas',
     value: 'shape',
     icon: <BorderOutlined style={iconStyle} />
   },
   {
-    label: '画笔',
+    label: 'Desenhar',
     value: 'paint',
     icon: <BulbOutlined style={iconStyle} />
   },
   {
-    label: '应用',
+    label: 'Extensões',
     value: 'app',
     icon: <AppstoreOutlined style={iconStyle} />
   }
@@ -61,6 +67,9 @@ export default function Panel () {
   const renderPanel = (value) => {
     if (value === 'design') {
       return <DesignPanel />;
+    }
+    if (value === 'icon') {
+      return <IconPanel />;
     }
     if (value === 'text') {
       return <TextPanel />;

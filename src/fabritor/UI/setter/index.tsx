@@ -4,6 +4,7 @@ import { GloablStateContext } from '@/context';
 import { SKETCH_ID } from '@/utils/constants';
 import SketchSetter from './SketchSetter';
 import TextSetter from './TextSetter';
+import IconSetter from './IconSetter';
 import ImageSetter from './ImageSetter';
 import { LineSetter, ShapeSetter } from './ShapeSetter';
 import { CenterV } from '@/fabritor/components/Center';
@@ -30,7 +31,13 @@ export default function Setter () {
   const getRenderSetter = () => {
     if (!isReady) return null;
     if (!object || object.id === SKETCH_ID) return <SketchSetter />;
+    
+    // Verifica se o objeto tem data e tipo personalizado dentro de data
+    const objectType = object.data && object.data.objectType ? object.data.objectType : object.type;
+
     switch (objectType) {
+      case 'icon':
+        return <IconSetter />;
       case 'textbox':
       case 'f-text':
         return <TextSetter />;
@@ -47,12 +54,14 @@ export default function Setter () {
       case 'f-image':
         return <ImageSetter />;
       case 'path':
-        if (object?.sub_type === 'rough') {
+        // Verificar subtipos específicos dentro de path
+        if (object.data && object.data.sub_type === 'rough') {
           return <RoughSetter />
         }
         return <PathSetter />;
       case 'group':
-        if (object?.sub_type === 'rough') {
+        // Similar ao path, verificar subtipos para grupos
+        if (object.data && object.data.sub_type === 'rough') {
           return <RoughSetter />
         }
         return <GroupSetter />;
@@ -61,7 +70,8 @@ export default function Setter () {
       default:
         return null;
     }
-  }
+}
+
 
   const renderSetter = () => {
     const Setter = getRenderSetter();

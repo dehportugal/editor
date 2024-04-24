@@ -85,7 +85,7 @@ const ContextMenu = (props, ref) => {
         type: 'divider',
       });
       menuItems.push({
-        label: '图层',
+        label: 'Camadas',
         key: 'layer',
         children: [
           {

@@ -1,3 +1,7 @@
+
+
+
+
 import { fabric } from 'fabric';
 import { useEffect, useRef, useState } from 'react';
 import { Layout, Spin } from 'antd';
@@ -32,7 +36,7 @@ const contentStyle: React.CSSProperties = {
 export default function Fabritor () {
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const workspaceEl = useRef<HTMLDivElement>(null);
-  const roughSvgEl = useRef(null);
+  const roughSvgEl = useRef<SVGSVGElement>(null);
   const [editor, setEditor] = useState<Editor | null>(null);
   const [roughSvg, setRoughSvg] = useState<any>();
   const [activeObject, setActiveObject] = useState<fabric.Object | null | undefined>(null);
@@ -40,6 +44,7 @@ export default function Fabritor () {
   const contextMenuRef = useRef<any>(null);
 
   const clickHandler = (opt) => {
+    if (!editor) return;
     const { target } = opt;
     if (editor.getIfPanEnable()) return;
 
@@ -48,7 +53,7 @@ export default function Fabritor () {
       return;
     }
 
-    if (opt.button === 3) { // 右键
+    if (opt.button === 3) { // Right click
       if (target.id !== SKETCH_ID) {
         editor.canvas.setActiveObject(target);
       }
@@ -61,22 +66,24 @@ export default function Fabritor () {
   }
 
   const selectionHandler = (opt) => {
+    if (!editor) return;
     const { selected, sketch } = opt;
     if (selected && selected.length) {
       const selection = editor.canvas.getActiveObject();
       setActiveObject(selection);
     } else {
-      // @ts-ignore
       setActiveObject(sketch);
     }
   }
 
   const groupHandler = () => {
+    if (!editor) return;
     const selection = editor.canvas.getActiveObject();
     setActiveObject(selection);
   }
 
   const loadJsonHandler = (opt) => {
+    if (!editor) return;
     const { lastActiveObject } = opt;
     if (lastActiveObject) {
       editor.canvas.setActiveObject(lastActiveObject);
@@ -85,6 +92,7 @@ export default function Fabritor () {
   }
   
   const initEvent = () => {
+    if (!editor) return;
     editor.canvas.on('selection:created', selectionHandler);
     editor.canvas.on('selection:updated', selectionHandler);
     editor.canvas.on('selection:cleared', selectionHandler);
@@ -98,24 +106,37 @@ export default function Fabritor () {
   }
 
   const initEditor = async () => {
-    const _editor = new Editor({
-      canvasEl: canvasEl.current,
-      workspaceEl: workspaceEl.current,
-      sketchEventHandler: {
-        groupHandler: () => { setActiveObject(_editor.canvas.getActiveObject()) }
+    try {
+      if (canvasEl.current && workspaceEl.current) {
+        const _editor = new Editor({
+          canvasEl: canvasEl.current,
+          workspaceEl: workspaceEl.current,
+          sketchEventHandler: {
+            groupHandler: () => setActiveObject(_editor.canvas.getActiveObject())
+          }
+        });
+
+        await _editor.init();
+        setEditor(_editor);
+        setReady(true);
+        setActiveObject(_editor.sketch);
       }
-    });
-
-    await _editor.init();
-
-    setEditor(_editor);
-    setReady(true);
-    setActiveObject(_editor.sketch);
+    } catch (error) {
+      console.error("Failed to initialize the editor: ", error);
+      if (canvasEl.current) {
+        // Try to restore the canvas state
+        const context = canvasEl.current.getContext('2d');
+        if (context) {
+          context.restore();
+        }
+      }
+    }
   }
 
   const initRoughSvg = () => {
-    // @ts-ignore rough svg
-    setRoughSvg(rough.svg(roughSvgEl.current));
+    if (roughSvgEl.current) {
+      setRoughSvg(rough.svg(roughSvgEl.current));
+    }
   }
 
   useEffect(() => {
@@ -127,9 +148,15 @@ export default function Fabritor () {
 
   useEffect(() => {
     initEditor();
-
     return () => {
       if (editor) {
+        editor.canvas.off('selection:created', selectionHandler);
+        editor.canvas.off('selection:updated', selectionHandler);
+        editor.canvas.off('selection:cleared', selectionHandler);
+        editor.canvas.off('mouse:down', clickHandler);
+        editor.canvas.off('fabritor:group', groupHandler);
+        editor.canvas.off('fabritor:ungroup', groupHandler);
+        editor.canvas.off('fabritor:load:json', loadJsonHandler);
         editor.destroy();
       }
     }
@@ -161,9 +188,8 @@ export default function Fabritor () {
           </Content>
           <Setter />
         </Layout>
-
         <svg id="fabritor-rough-svg" ref={roughSvgEl} />
       </Layout>
     </GloablStateContext.Provider>
-  )
+  );
 }
