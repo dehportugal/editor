@@ -1,81 +1,109 @@
-import { Dropdown, Button, Divider, message } from 'antd';
+import { useContext, useEffect, useRef } from 'react';
+import { Button, Dropdown, message } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { downloadFile, base64ToBlob } from '@/utils';
-import { useContext, useRef } from 'react';
 import { GloablStateContext } from '@/context';
 import LocalFileSelector from '@/fabritor/components/LocalFileSelector';
 import { CenterV } from '@/fabritor/components/Center';
 import { SETTER_WIDTH } from '@/config';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+
+
+// Firebase Config (Substitua com sua configuração)
+const firebaseConfig = {
+  apiKey: 'AIzaSyCOFnMiSFUQTc0AS9Bp4BiExVvvv9Lcdl0',
+  authDomain: 'editor-promov.firebaseapp.com',
+  projectId: 'editor-promov',
+  storageBucket: 'editor-promov.appspot.com',
+  messagingSenderId: '850159332777',
+  appId: '1:850159332777:web:7d330c25bf4ebd7a6ca8b8',
+};
+
+// Inicialize o Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 const items: MenuProps['items'] = [
-  /*{
-    key: 'jpg',
-    label: '导出为 JPG'
-  },
-  {
-    key: 'png',
-    label: '导出为 PNG'
-  },
-  {
-    key: 'svg',
-    label: '导出为 SVG'
-  },*/
   {
     key: 'json',
     label: 'Baixar Modelo'
   },
   {
-    key: 'save',
+    key: 'jpg',
     label: 'Salvar'
-  },
-  /*{
-    type: 'divider'
-  },
-  {
-    key: 'clipboard',
-    label: '复制到剪贴板'
-  }*/
-]
+  }
+];
 
-export default function Export () {
+export default function Export() {
   const { editor, setReady, setActiveObject } = useContext(GloablStateContext);
   const localFileSelectorRef = useRef<any>();
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Coloque aqui o código que você quer executar após o delay
+      fetchTemplate();
+    }, 2000); // Executa fetchTemplate após 2 segundos
+  
+    return () => clearTimeout(timer); // Limpa o timer se o componente for desmontado
+  }, [location.search, editor]);
+
+  const fetchTemplate = async () => {
+    const queryParams = new URLSearchParams(location.search);
+    const docId = queryParams.get('t');
+    console.log(`PARAMETRO: ${docId}`);
+    const docRef = firebase.firestore().collection('template').doc(docId);
+    const doc = await docRef.get();
+    console.log('Template:', doc.data()); // Chamada correta para visualizar os dados
+  
+    if (doc.exists) {
+      const { url } = doc.data(); // Acessando os dados corretamente
+      console.log('URL do Template:', url); // Verifique se o URL está sendo obtido corretamente
+  
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Falha ao carregar o template');
+          }
+          return response.text();
+        })
+        .then(jsonStr => {
+          loadEditorWithJSON(jsonStr);
+        })
+        .catch(err => message.error('Erro ao carregar o template: ' + err.message));
+    } else {
+      message.error('Documento não encontrado v3');
+    }
+  };
+  
+
+  const loadEditorWithJSON = (jsonStr) => {
+    if (editor) {
+      setReady(false);
+      editor.loadFromJSON(jsonStr, true);  // Certifique-se de chamar o método do objeto editor
+      editor.fhistory.reset();
+      setReady(true);
+      setActiveObject(null);
+      editor.fireCustomModifiedEvent();
+    } else {
+      message.error("Editor não está disponível.");
+    }
+  };
+
   const selectJsonFile = () => {
     localFileSelectorRef.current?.start?.();
-  }
+  };
 
   const handleFileChange = (file) => {
-    setReady(false);
     const reader = new FileReader();
-    reader.onload = (async (evt) => {
+    reader.onload = async (evt) => {
       const json = evt.target?.result as string;
-      if (json) {
-        await editor.loadFromJSON(json, true);
-        editor.fhistory.reset();
-        setReady(true);
-        setActiveObject(null);
-        editor.fireCustomModifiedEvent();
-      }
-    });
+      loadEditorWithJSON(json);
+    };
     reader.readAsText(file);
-  }
-
-  const copyImage = async () => {
-    try {
-      const png = editor.export2Img({ format: 'png' });
-      const blob = await base64ToBlob(png);
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          'image/png': blob
-        })
-      ]);
-      message.success('复制成功');
-    } catch(e) {
-      message.error('复制失败，请选择导出到本地');
-    }
-  }
+  };
 
   const handleClick = ({ key }) => {
     const { sketch } = editor;
@@ -117,16 +145,16 @@ export default function Export () {
       }}
     >
       <Button onClick={selectJsonFile}>
-        加载模板
+        Importar
       </Button>
       <Dropdown 
         menu={{ items, onClick: handleClick }} 
         arrow={{ pointAtCenter: true }}
         placement="bottom"
       >
-        <Button type="primary" icon={<ExportOutlined />}>导出</Button>
+        <Button type="primary" icon={<ExportOutlined />}>Exportar</Button>
       </Dropdown>
       <LocalFileSelector accept="application/json" ref={localFileSelectorRef} onChange={handleFileChange} />
     </CenterV>
-  )
+  );
 }
