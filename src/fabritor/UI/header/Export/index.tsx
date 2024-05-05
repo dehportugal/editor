@@ -9,6 +9,8 @@ import { CenterV } from '@/fabritor/components/Center';
 import { SETTER_WIDTH } from '@/config';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import 'firebase/compat/storage';
+
 
 
 // Firebase Config (Substitua com sua configuração)
@@ -32,7 +34,7 @@ const items: MenuProps['items'] = [
     label: 'Baixar Modelo'
   },
   {
-    key: 'jpg',
+    key: 'publish',
     label: 'Salvar'
   }
 ];
@@ -105,36 +107,58 @@ export default function Export() {
     reader.readAsText(file);
   };
 
-  const handleClick = ({ key }) => {
+  const handleClick = async ({ key }) => {
     const { sketch } = editor;
     // @ts-ignore
     const name = sketch.fabritor_desc;
     switch (key) {
-      case 'png':
-        const png = editor.export2Img({ format: 'png' });
-        downloadFile(png, 'png', name);
-        break;
-      case 'jpg':
-        const jpg = editor.export2Img({ format: 'jpg' });
-        downloadFile(jpg, 'jpg', name);
-        break;
-      case 'svg':
-        const svg = editor.export2Svg();
-        downloadFile(svg, 'svg', name);
-        break;
-      case 'json':
-        const json = editor.canvas2Json();
-        downloadFile(`data:text/json;charset=utf-8,${encodeURIComponent(
-          JSON.stringify(json, null, 2)
-        )}`, 'json', name);
-        break;
-      case 'clipboard':
-        copyImage();
-        break;
-      default:
-        break;
+        case 'png':
+            const png = editor.export2Img({ format: 'png' });
+            downloadFile(png, 'png', name);
+            break;
+        case 'jpg':
+            const jpg = editor.export2Img({ format: 'jpg' });
+            downloadFile(jpg, 'jpg', name);
+            break;
+        case 'publish':
+            const publishImage = editor.export2Img({ format: 'jpg' });
+            const blob = await base64ToBlob(publishImage);
+            const storageRef = firebase.storage().ref();
+            const imageRef = storageRef.child('images/' + name + '.jpg');
+            try {
+                const snapshot = await imageRef.put(blob);
+                const url = await snapshot.ref.getDownloadURL();
+                const docRef = await firebase.firestore().collection('criativos').add({
+                    url: url
+                });
+                window.parent.postMessage({
+                    type: 'editorPublish',
+                    data: {
+                        url: url,
+                        docId: docRef.id
+                    }
+                }, '*'); // Use specific domain instead of '*' in production for security
+                message.success('Publicado com sucesso');
+            } catch (error) {
+                message.error('Erro ao publicar: ' + error.message);
+            }
+            break;
+        case 'svg':
+            const svg = editor.export2Svg();
+            downloadFile(svg, 'svg', name);
+            break;
+        case 'json':
+            const json = editor.canvas2Json();
+            downloadFile(`data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(json, null, 2))}`, 'json', name);
+            break;
+        case 'clipboard':
+            copyImage();
+            break;
+        default:
+            break;
     }
-  }
+};
+
   return (
     <CenterV
       justify="flex-end"
