@@ -260,7 +260,7 @@ export default function Export() {
           url: publicUrl,
           docId: name  // Usando o nome como identificador se necessário
       }
-    }, 'https://your-specific-domain.com'); // Use specific domain in production for security
+    }, 'https://impulsionaai.bubbleapps.io'); // Use specific domain in production for security
   }
   break;
 
