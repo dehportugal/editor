@@ -10,6 +10,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@ice/runtime": "^1.4.5",
+    "@supabase/supabase-js": "^2.43.1",
     "antd": "^5.11.0",
     "cropperjs": "^1.6.1",
     "emoji-mart": "^5.5.2",
@@ -40,10 +41,10 @@
     "typescript": "^4.9.5"
   },
   "scripts": {
-    "start": "./node_modules/.bin/ice start --speedup",
-    "build": "./node_modules/.bin/ice build",
+    "start": ".\\node_modules\\.bin\\ice start --speedup",
+    "build": ".\\node_modules\\.bin\\ice build",
     "surge": "yarn build && cd build && surge",
-    "eslint": "eslint ./src --cache --ext .js,.jsx,.ts,.tsx",
+    "eslint": "eslint .\\src --cache --ext .js,.jsx,.ts,.tsx",
     "eslint:fix": "npm run eslint -- --fix",
     "stylelint": "stylelint \"src/**/*.{css,scss,less}\" --cache",
     "stylelint:fix": "npm run stylelint -- --fix"

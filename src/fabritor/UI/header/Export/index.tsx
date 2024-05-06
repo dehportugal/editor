@@ -7,26 +7,12 @@ import { GloablStateContext } from '@/context';
 import LocalFileSelector from '@/fabritor/components/LocalFileSelector';
 import { CenterV } from '@/fabritor/components/Center';
 import { SETTER_WIDTH } from '@/config';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
-import 'firebase/compat/storage';
+import { createClient } from '@supabase/supabase-js';
 
-
-
-// Firebase Config (Substitua com sua configuração)
-const firebaseConfig = {
-  apiKey: 'AIzaSyCOFnMiSFUQTc0AS9Bp4BiExVvvv9Lcdl0',
-  authDomain: 'editor-promov.firebaseapp.com',
-  projectId: 'editor-promov',
-  storageBucket: 'editor-promov.appspot.com',
-  messagingSenderId: '850159332777',
-  appId: '1:850159332777:web:7d330c25bf4ebd7a6ca8b8',
-};
-
-// Inicialize o Firebase
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+// Supabase Config
+const supabaseUrl = 'https://uihyccnkgvvhkdvfuqsn.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpaHljY25rZ3Z2aGtkdmZ1cXNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTIwOTg3OTAsImV4cCI6MjAyNzY3NDc5MH0.gSw8ake7dtFnjRU9roZoBUwAiVRVaCuEfAjRkJhHLvw'; // Substitua 'SUA_ANON_KEY_AQUI' pela sua chave anon do Supabase
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const items: MenuProps['items'] = [
   {
@@ -45,7 +31,6 @@ export default function Export() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Coloque aqui o código que você quer executar após o delay
       fetchTemplate();
     }, 2000); // Executa fetchTemplate após 2 segundos
   
@@ -55,36 +40,37 @@ export default function Export() {
   const fetchTemplate = async () => {
     const queryParams = new URLSearchParams(location.search);
     const docId = queryParams.get('t');
-    console.log(`PARAMETRO: ${docId}`);
-    const docRef = firebase.firestore().collection('template').doc(docId);
-    const doc = await docRef.get();
-    console.log('Template:', doc.data()); // Chamada correta para visualizar os dados
-  
-    if (doc.exists) {
-      const { url } = doc.data(); // Acessando os dados corretamente
-      console.log('URL do Template:', url); // Verifique se o URL está sendo obtido corretamente
-  
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Falha ao carregar o template');
-          }
-          return response.text();
-        })
-        .then(jsonStr => {
-          loadEditorWithJSON(jsonStr);
-        })
-        .catch(err => message.error('Erro ao carregar o template: ' + err.message));
+    if (docId) {
+      const { data, error } = await supabase
+        .from('template')
+        .select('url')
+        .eq('id', docId)
+        .single();
+
+      if (error) {
+        message.error('Erro ao carregar o template: ' + error.message);
+      } else if (data) {
+        fetch(data.url)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Falha ao carregar o template');
+            }
+            return response.text();
+          })
+          .then(jsonStr => {
+            loadEditorWithJSON(jsonStr);
+          })
+          .catch(err => message.error('Erro ao carregar o template: ' + err.message));
+      }
     } else {
-      message.error('Documento não encontrado v3');
+      message.error('Documento não encontrado');
     }
   };
-  
 
   const loadEditorWithJSON = (jsonStr) => {
     if (editor) {
       setReady(false);
-      editor.loadFromJSON(jsonStr, true);  // Certifique-se de chamar o método do objeto editor
+      editor.loadFromJSON(jsonStr, true);
       editor.fhistory.reset();
       setReady(true);
       setActiveObject(null);
@@ -109,60 +95,70 @@ export default function Export() {
 
   const handleClick = async ({ key }) => {
     const { sketch } = editor;
-    // @ts-ignore
-    const name = sketch.fabritor_desc;
+    const name = encodeURIComponent(sketch.fabritor_desc);
     switch (key) {
-        case 'png':
-            const png = editor.export2Img({ format: 'png' });
-            downloadFile(png, 'png', name);
-            break;
-        case 'jpg':
-            const jpg = editor.export2Img({ format: 'jpg' });
-            downloadFile(jpg, 'jpg', name);
-            break;
-        case 'publish':
-            const publishImage = editor.export2Img({ format: 'jpg' });
-            const blob = await base64ToBlob(publishImage);
-            const storageRef = firebase.storage().ref();
-            const imageRef = storageRef.child('images/' + name + '.jpg');
-            try {
-                const snapshot = await imageRef.put(blob);
-                const url = await snapshot.ref.getDownloadURL();
-                const docRef = await firebase.firestore().collection('criativos').add({
-                    url: url
-                });
-                window.parent.postMessage({
-                    type: 'editorPublish',
-                    data: {
-                        url: url,
-                        docId: docRef.id
-                    }
-                }, '*'); // Use specific domain instead of '*' in production for security
-                message.success('Publicado com sucesso');
-            } catch (error) {
-                message.error('Erro ao publicar: ' + error.message);
-            }
-            break;
-        case 'svg':
-            const svg = editor.export2Svg();
-            downloadFile(svg, 'svg', name);
-            break;
-        case 'json':
-            const json = editor.canvas2Json();
-            downloadFile(`data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(json, null, 2))}`, 'json', name);
-            break;
-        case 'clipboard':
-            copyImage();
-            break;
-        default:
-            break;
+      case 'publish':
+  const publishImage = editor.export2Img({ format: 'jpg' });
+  const blob = await base64ToBlob(publishImage, 'image/jpeg');
+  
+  let formData = new FormData();
+  formData.append('file', blob, `${name}.jpg`);
+
+  // Upload do arquivo para o bucket 'imgs' no Supabase Storage
+  const uploadUrl = `${supabaseUrl}/storage/v1/object/imgs/public/${name}.jpg`;
+  let uploadResponse = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${supabaseAnonKey}`,
+      'apikey': supabaseAnonKey
+    },
+    body: formData
+  });
+
+  if (!uploadResponse.ok) {
+    const uploadError = await uploadResponse.json();
+    message.error('Erro ao publicar 1: ' + uploadError.message);
+    return;
+  }
+
+  // Extrair URL pública do arquivo após upload
+  const publicUrl = `${supabaseUrl}/storage/v1/object/public/imgs/public/${name}.jpg`;
+
+  // Inserir a URL pública no banco de dados 'criativo'
+  const insertUrl = `${supabaseUrl}/rest/v1/criativo`;
+  let insertResponse = await fetch(insertUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${supabaseAnonKey}`,
+      'apikey': supabaseAnonKey
+    },
+    body: JSON.stringify([{ url: publicUrl }])
+  });
+
+  if (!insertResponse.ok) {
+    const dbError = await insertResponse.json();
+    message.error('Erro ao publicar: ' + dbError.message);
+  } else {
+    message.success('Publicado com sucesso');
+    window.parent.postMessage({
+      type: 'editorPublish',
+      data: {
+          url: publicUrl,
+          docId: name  // Usando o nome como identificador se necessário
+      }
+    }, 'https://your-specific-domain.com'); // Use specific domain in production for security
+  }
+  break;
+      default:
+        break;
     }
-};
+  };
 
   return (
     <CenterV
       justify="flex-end"
-      gap={16}
+      gap={16} // Certifique-se de que o componente CenterV aceita estas props diretamente.
       style={{
         width: SETTER_WIDTH,
         paddingRight: 16
@@ -172,7 +168,7 @@ export default function Export() {
         Importar
       </Button>
       <Dropdown 
-        menu={{ items, onClick: handleClick }} 
+        menu={{ items, onClick: handleClick }} // Verifique se a propriedade 'menu' é suportada desta maneira pelo componente Dropdown.
         arrow={{ pointAtCenter: true }}
         placement="bottom"
       >
