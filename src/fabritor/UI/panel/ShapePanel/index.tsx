@@ -83,7 +83,7 @@ export default function ShapePanel () {
 
   return (
     <div className="fabritor-panel-wrapper">
-      <Title>线条</Title>
+      <Title>Linha:</Title>
       <Flex gap={10} wrap="wrap" justify="space-around">
         {
           LineTypeList.map(item => (
@@ -97,7 +97,7 @@ export default function ShapePanel () {
           ))
         }
       </Flex>
-      <Title>形状</Title>
+      <Title>Forma:</Title>
       <Flex gap={10} wrap="wrap" justify="space-around">
         {
           ShapeTypeList.map(item => (
@@ -113,7 +113,7 @@ export default function ShapePanel () {
       </Flex>
       <Title>
         <div style={{ position: 'relative' }}>
-          <span>手绘风格</span>
+          <span>Estilo desenhado à mão</span>
           <Tag color='#f50' style={{ position: 'absolute', right: -48, top: -5, padding: '0 4px' }}>beta</Tag>
         </div>
       </Title>

@@ -3,43 +3,43 @@ import Title from '@/fabritor/components/Title';
 
 const PRESET_FONT_LIST = [
   {
-    label: <div style={{ fontSize: 30, fontFamily: 'SmileySans', fontWeight: 'bold' }}>添加标题</div>,
+    label: <div style={{ fontSize: 30, fontFamily: 'SmileySans', fontWeight: 'bold' }}>Adicionar título</div>,
     key: 'title',
     config: {
       fontFamily: 'SmileySans',
       fontWeight: 'bold',
       fontSize: 120,
-      text: '添加标题',
+      text: 'Adicionar Título',
       top: 100
     }
   },
   {
-    label: <div style={{ fontSize: 24, fontFamily: 'AlibabaPuHuiTi' }}>添加副标题</div>,
+    label: <div style={{ fontSize: 24, fontFamily: 'AlibabaPuHuiTi' }}>Adicionar legenda</div>,
     key: 'sub-title',
     config: {
       fontFamily: 'AlibabaPuHuiTi',
       fontWeight: 'bold',
       fontSize: 100,
-      text: '添加副标题',
+      text: 'Adicionar legenda',
       top: 400
     }
   },
   {
-    label: <div style={{ fontSize: 16, fontFamily: 'SourceHanSerif' }}>添加一段正文</div>,
+    label: <div style={{ fontSize: 16, fontFamily: 'SourceHanSerif' }}>Adicione um texto</div>,
     key: 'content',
     config: {
       fontFamily: 'SourceHanSerif',
       fontSize: 80,
-      text: '添加一段正文'
+      text: 'Adicione um texto'
     }
   },
   {
-    label: <div style={{ fontSize: 26, fontFamily: '霞鹜文楷', color: '#ffffff' , WebkitTextStroke: '1px rgb(255, 87, 87)' }}>文字边框</div>,
+    label: <div style={{ fontSize: 26, fontFamily: '霞鹜文楷', color: '#ffffff' , WebkitTextStroke: '1px rgb(255, 87, 87)' }}>Borda de texto</div>,
     key: 'content',
     config: {
       fontFamily: '霞鹜文楷',
       fontSize: 100,
-      text: '文字边框',
+      text: 'Borda de texto',
       fill: '#ffffff',
       stroke: '#ff5757',
       strokeWidth: 12
@@ -56,7 +56,7 @@ export default function PresetFontPanel (props) {
 
   return (
     <Flex vertical gap={8} style={{ marginTop: 16 }}>
-      <Title>默认文字样式</Title>
+     
       {
         PRESET_FONT_LIST.map(item => (
           <Card

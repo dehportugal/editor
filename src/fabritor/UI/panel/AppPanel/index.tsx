@@ -6,15 +6,15 @@ import EmojiPanel from './Emoji';
 
 const APP_LIST = [
   {
-    title: '二维码',
+    title: 'Código QR',
     key: 'qrcode',
     icon: <QrcodeOutlined style={{ fontSize: 30 }} />
   },
-  {
+  /*{
     title: 'Emoji',
     key: 'emoji',
     icon: <SmileOutlined style={{ fontSize: 30 }} />
-  }
+  }*/
 ];
 
 export default function AppPanel () {

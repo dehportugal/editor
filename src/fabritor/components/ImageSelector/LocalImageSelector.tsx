@@ -27,7 +27,7 @@ export default function LocalImageSelector (props) {
   return (
     <div>
       <Button type="primary" size="large" onClick={handleClick} {...rest}>
-        添加本地图片
+      Adicionar imagem local
       </Button>
 
       <LocalFileSelector accept="image/*" ref={localFileSelectorRef} onChange={handleFileChange} />

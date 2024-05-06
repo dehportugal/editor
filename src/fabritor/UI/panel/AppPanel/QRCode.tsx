@@ -50,15 +50,15 @@ export default function QRCodePanel (props) {
   }, []);
 
   return (
-    <AppSubPanel title="二维码" back={back}>
+    <AppSubPanel title="Código QR" back={back}>
       <Form
         form={form}
         onValuesChange={handleValuesChange}
       >
-        <FormItem name="value" label="文本">
+        <FormItem name="value" label="Texto">
           <Input />
         </FormItem>
-        <FormItem name="size" label="大小">
+        <FormItem name="size" label="Tamanho (pixels)">
           <InputNumber />
         </FormItem>
       </Form>
@@ -66,25 +66,25 @@ export default function QRCodePanel (props) {
         items={[
           {
             key: '1',
-            label: '其他设置',
+            label: 'Outras configurações',
             children: (
               <Form
                 form={form2}
                 onValuesChange={handleValuesChange}
               >
-                <FormItem name="color" label="颜色">
+                <FormItem name="color" label="cor">
                   <ColorSetter />
                 </FormItem>
-                <FormItem name="bgColor" label="背景色">
+                <FormItem name="bgColor" label="Cor de fundo">
                   <ColorSetter />
                 </FormItem>
-                <FormItem name="errorLevel" label="纠错等级">
+                <FormItem name="errorLevel" label="Nível de correção de erros">
                   <Radio.Group options={['L', 'M', 'Q', 'H']} />
                 </FormItem>
-                <FormItem name="icon" label="内置图片">
-                  <Input placeholder="仅支持图片链接" />
+                <FormItem name="icon" label="Imagem integrada">
+                  <Input placeholder="Imagem integrada" />
                 </FormItem>
-                <FormItem name="iconSize" label="内置图片大小">
+                <FormItem name="iconSize" label="Tamanho imagem">
                   <InputNumber />
                 </FormItem>
               </Form>
@@ -100,7 +100,7 @@ export default function QRCodePanel (props) {
             {...QRCodeConfig}
             style={{ maxWidth: 200 }}
           />
-          <Button type="primary" onClick={add2Canvas}>添加至画布</Button>
+          <Button type="primary" onClick={add2Canvas}>Gerar QR Code</Button>
         </Flex> : null
       }
     </AppSubPanel>

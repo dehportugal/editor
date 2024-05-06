@@ -12,22 +12,22 @@ import PositionSetter from './PositionSetter';
 
 const ALIGH_TYPES = [
   {
-    label: '居中',
+    label: 'Centro',
     icon: PicCenterOutlined,
     key: 'center'
   },
   {
-    label: '左对齐',
+    label: 'Esquerda',
     icon: AlignLeftOutlined,
     key: 'left'
   },
   {
-    label: '水平居中',
+    label: 'Centralizar horizontalmente',
     icon: AlignCenterOutlined,
     key: 'centerH'
   },
   {
-    label: '右对齐',
+    label: 'Alinhar à direita',
     icon: AlignRightOutlined,
     key: 'right'
   },
@@ -121,14 +121,14 @@ export default function CommonSetter () {
   return (
     <>
       <CenterV height={30} gap={8} justify="space-between">
-        <ToolbarItem tooltipProps={{ placement: 'top' }} onClick={handleLock} title={lock ? '解锁' : '锁定'}>
+        <ToolbarItem tooltipProps={{ placement: 'top' }} onClick={handleLock} title={lock ? 'Desbloquear' : '锁定'}>
           {
             lock ? 
             <UnlockOutlined style={{ fontSize: 20 }} /> :
             <LockOutlined style={{ fontSize: 20 }} />
           }
         </ToolbarItem>
-        <ToolbarItem tooltipProps={{ placement: 'top' }} title="透明度">
+        <ToolbarItem tooltipProps={{ placement: 'top' }} title="Transparência">
           <OpacitySetter
             value={opacity}
             onChange={handleOpacity}
@@ -137,7 +137,7 @@ export default function CommonSetter () {
         </ToolbarItem>
         <ToolbarItem
           tooltipProps={{ placement: 'top' }}
-          title="创建副本"
+          title="Crie uma cópia"
           onClick={
             async () => {
               await copyObject(editor.canvas, object);
@@ -149,7 +149,7 @@ export default function CommonSetter () {
         </ToolbarItem>
         <ToolbarItem
           tooltipProps={{ placement: 'top' }}
-          title="删除"
+          title="Excluir"
           onClick={() => { removeObject(null, editor.canvas); }}
         >
           <DeleteOutlined style={{ fontSize: 20 }} />
@@ -158,14 +158,14 @@ export default function CommonSetter () {
           object.type === 'f-image' ?
           <ToolbarItem
             tooltipProps={{ placement: 'top' }}
-            title="翻转"
+            title="Virar"
           >
             <FlipSetter onChange={handleFlip} />
           </ToolbarItem> : null
         }
       </CenterV>
       <Divider style={{ margin: '16px 0' }} />
-      <span style={{ fontWeight: 'bold' }}>画布对齐</span>
+      <span style={{ fontWeight: 'bold' }}>Alinhamento da Tela</span>
       <CenterV height={30} gap={8} justify="space-between" style={{ marginTop: 16 }}>
         {
           ALIGH_TYPES.map(item => (

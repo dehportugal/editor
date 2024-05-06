@@ -29,15 +29,15 @@ export default function PathSetterForm (props) {
       style={{ marginBottom: 0, marginTop: 16 }}
       colon={false}
     >
-      {showPenTip ? <FormItem label={<span style={{ fontSize: 15, fontWeight: 'bold' }}>画笔</span>} /> : null }
+      {showPenTip ? <FormItem label={<span style={{ fontSize: 15, fontWeight: 'bold' }}>Escovar</span>} /> : null }
       <FormItem
-        label={showFillConfig ? '描边' : '颜色'}
+        label={showFillConfig ? '描边' : 'Cor'}
         name="color"
       >
         <SolidColorSetter onChange={fireEvent} />
       </FormItem>
       <FormItem
-        label="线宽"
+        label="Largura"
         name="width"
       >
         <SliderInputNumber min={1} max={100} onChangeComplete={fireEvent} />
@@ -51,21 +51,21 @@ export default function PathSetterForm (props) {
           <ColorSetter onChange={fireEvent} />
         </FormItem> : null
       }
-      <FormItem label={<span style={{ fontSize: 15, fontWeight: 'bold' }}>阴影</span>} />
+      <FormItem label={<span style={{ fontSize: 15, fontWeight: 'bold' }}>Sombra</span>} />
       <FormItem
-        label="颜色"
+        label="Cor"
         name={['shadow', 'color']}
       >
         <SolidColorSetter onChange={fireEvent} />
       </FormItem>
       <FormItem
-        label="宽度"
+        label="Largura"
         name={['shadow', 'width']}
       >
         <SliderInputNumber min={0} max={50} onChangeComplete={fireEvent} />
       </FormItem>
       <FormItem
-        label="偏移"
+        label="Desvio"
         name={['shadow', 'offset']}
       >
         <SliderInputNumber min={0} max={20} onChangeComplete={fireEvent} />

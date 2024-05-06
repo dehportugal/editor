@@ -115,7 +115,7 @@ export default function Setter () {
           }
           return '形状';
         }
-        return '画笔'
+        return 'Escovar'
       case 'group':
         if (object?.sub_type === 'rough') {
           return '手绘风格';

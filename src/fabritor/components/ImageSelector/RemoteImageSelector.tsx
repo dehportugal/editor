@@ -16,14 +16,14 @@ export default function RemoteImageSelector (props) {
       content={
         <Space.Compact>
           <Input value={url} onChange={(e) => { setUrl(e.target.value) }} style={{ width: 260 }} />
-          <Button onClick={handleClick}>确认</Button>
+          <Button onClick={handleClick}>Confirmar</Button>
         </Space.Compact>
       }
-      title="请输入地址："
+      title="Por favor insira a url:"
       trigger="click"
     >
       <Button type="primary" size="large" {...rest}>
-        添加远程图片
+        Adicionar de uma url
       </Button>
     </Popover>
   );

@@ -115,7 +115,7 @@ export default function PaintPanel () {
         value={penFormValues}
         showPenTip
       />
-      <Title>操作</Title>
+      <Title>Operar</Title>
       <Flex wrap="wrap" justify="space-around">
         <Button style={{ width: 64 }} onClick={stopFreeDrawMode} type={isDrawingMode ? 'default' : 'primary'} title="停止绘图">
           <img src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(DRAG_ICON)}`} style={{ width: 22, height: 22 }} />
