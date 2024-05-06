@@ -121,6 +121,12 @@ export default function Export() {
     return;
   }
 
+  case 'json':
+        const json = editor.canvas2Json();
+        downloadFile(`data:text/json;charset=utf-8,${encodeURIComponent(
+          JSON.stringify(json, null, 2)
+        )}`, 'json', name);
+        break;
   // Extrair URL pública do arquivo após upload
   const publicUrl = `${supabaseUrl}/storage/v1/object/public/imgs/public/${name}.jpg`;
 
