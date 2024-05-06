@@ -252,7 +252,6 @@ export default function Export() {
     const dbError = await insertResponse.json();
     message.error('Erro ao publicar: ' + dbError.message);
   } else {
-    message.success('Publicado com sucesso');
     window.parent.postMessage({
       type: 'editorPublish',
       data: {
@@ -260,7 +259,9 @@ export default function Export() {
           url: publicUrl,
           docId: name  // Usando o nome como identificador se necessário
       }
-    }, 'https://impulsionaai.bubbleapps.io'); // Use specific domain in production for security
+    }, '*); // Use specific domain in production for security
+
+    message.success('Publicado com sucesso');  
   }
   break;
 
