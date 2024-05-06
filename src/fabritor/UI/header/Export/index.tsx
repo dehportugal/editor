@@ -259,7 +259,7 @@ export default function Export() {
           url: publicUrl,
           docId: name  // Usando o nome como identificador se necessário
       }
-    }, '*); // Use specific domain in production for security
+    }, '*'); // Use specific domain in production for security
 
     message.success('Publicado com sucesso');  
   }
